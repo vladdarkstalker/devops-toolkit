@@ -1,87 +1,32 @@
-# PXE
+# DevOps Toolkit
 
-## Schema
+Набор Ansible-ролей для развёртывания компонентов PXE-инфраструктуры.
 
-ansible/
-├── inventories/
-│   ├── dev/
-│   └── prod/
-│
-├── playbooks/
-│   ├── pxe.yml
-│   ├── dns.yml
-│   └── web.yml
-│
-├── roles/
-│   ├── dhcp/
-│   ├── tftp/
-│   ├── nginx/
-│   ├── apache/
-│   ├── dns/
-│   ├── ipxe/
-│   └── firewall/
-│
-└── group_vars/
+Проект находится в разработке и пока не предназначен для production.
 
-roles/
-├── dhcp        # DHCP-сервер
-├── dns         # DNS (если нужен)
-├── tftp        # TFTP и загрузчики (pxelinux.0, ipxe.efi и т.п.)
-├── nginx       # или apache — только настройка веб-сервера
-├── ipxe        # меню iPXE, kernel, initrd, Kickstart/Preseed, ISO
-├── firewall    # правила firewall
-└── selinux     # при необходимости настройка SELinux
+## Роли
 
+- `dhcp` — установка и настройка `isc-dhcp-server`;
+- `tftp` — установка TFTP-сервера;
+- `nginx` — установка веб-сервера;
+- `dns` — установка DNS-сервера.
 
-role: dhcp
-Устанавливает dhcpd; генерирует dhcpd.conf; запускает сервис.
-roles/dhcp/
-tasks/
-templates/
-defaults/
+Подробности и переменные находятся в README каждой роли.
 
-role: tftp
-Устанавливает tftp-server; создает каталог /var/lib/tftpboot; кладет ipxe.efi; кладет undionly.kpxe; запускает сервис.
-roles/tftp/
-tasks/
-templates/
-files/
+## Структура
 
-role: nginx
-Устанавливает nginx; настраивает виртуальный хост; открывает firewall; запускает сервис.
+```text
+playbooks/   # Playbook-файлы
+roles/       # Ansible-роли
+ansible.cfg  # Настройки Ansible
+```
 
-role: ipxe
-Копирует меню; копирует kernel; копирует initrd; копирует kickstart; копирует ISO.
+## Пример запуска
 
-role: firewall
-Она откроет: 69/udp; 80/tcp; 443/tcp; 67/udp; 4011/udp.
+Подготовьте inventory с группой `dhcp_servers`, затем выполните:
 
-playbook
-- hosts: pxe
-  roles:
-    - firewall
-    - dhcp
-    - tftp
-    - nginx
-    - ipxe
+```bash
+ansible-playbook -i inventory.ini playbooks/dhcp.yaml
+```
 
-Если DNS тоже на этом сервере:
-roles:
-  - firewall
-  - dns
-  - dhcp
-  - tftp
-  - nginx
-  - ipxe
-
-DHCP и DNS находятся на другом сервере:
-- hosts: dns
-  roles:
-    - dns
-    - dhcp
-- hosts: pxe
-  roles:
-    - firewall
-    - tftp
-    - nginx
-    - ipxe
+Для выполнения задач на целевых серверах необходимы права `become`.
