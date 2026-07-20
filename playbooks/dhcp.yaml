@@ -1,0 +1,9 @@
+# ansible-playbook -i inventory.ini playbooks/dhcp.yaml
+
+---
+- name: Configure DHCP Server
+  hosts: dhcp_servers
+  become: true
+  gather_facts: true
+  roles:
+    - dhcp

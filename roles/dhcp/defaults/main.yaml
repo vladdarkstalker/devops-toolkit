@@ -1,0 +1,14 @@
+dhcp_user: root
+
+dhcp_group: root
+
+dhcp_packages:
+  - isc-dhcp-server
+
+dhcp_backup_path: /opt/backups
+
+# dhcp_backup_files:
+#   - /etc/dhcp/dhcpd.conf
+
+dhcp_backup_dirs:
+  - /etc/dhcp

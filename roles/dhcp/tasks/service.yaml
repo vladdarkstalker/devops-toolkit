@@ -1,0 +1,6 @@
+- name: Setup isc-dhcp-server
+  ansible.builtin.systemd:
+    name: isc-dhcp-server
+    enabled: true
+    state: started
+  when: ansible_os_family == "Debian"

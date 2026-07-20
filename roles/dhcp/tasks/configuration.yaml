@@ -1,0 +1,8 @@
+- name: Deploy dhcpd.conf
+  ansible.builtin.copy:
+    src: dhcpd.conf
+    dest: /etc/dhcp/dhcpd.conf
+    owner: "{{ dhcp_user }}"
+    group: "{{ dhcp_group }}"
+    mode: u=rw,g=r,o=r
+  notify: Restart isc-dhcp-server

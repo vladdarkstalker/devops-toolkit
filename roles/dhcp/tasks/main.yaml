@@ -1,0 +1,21 @@
+# Work with packages
+- name: Update repository index
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  when: ansible_os_family == "Debian"
+
+- name: Install DHCP packages
+  ansible.builtin.import_tasks: packages.yaml
+
+# Backup
+- name: Backup files
+  ansible.builtin.import_tasks: backup.yaml
+
+# Configuration
+- name: Configure DHCP
+  ansible.builtin.import_tasks: configuration.yaml
+
+# Service
+- name: Setup services
+  ansible.builtin.import_tasks: service.yaml
