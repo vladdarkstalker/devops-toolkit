@@ -1,0 +1,5 @@
+- name: Installing bind
+  ansible.builtin.package:
+    name: "{{ dns_packages }}"
+    state: present
+    

@@ -11,6 +11,7 @@
 #   loop: "{{ dhcp_backup_files }}"
 #   register: dhcp_backup_files_stat
 
+# If we need copy dirs
 - name: Is backup dirs exist
   ansible.builtin.stat:
     path: "{{ item }}"
@@ -24,11 +25,12 @@
 #     dest: "{{ dhcp_backup_path }}/"
 #     mode: preserve
 #     remote_src: true
-#   loop: "{{ dhcp_backup_files_stat.results }}"
+#   loop: "{{ ansible_date_time.iso8601_basic_short }}_{{ dhcp_backup_files_stat.results }}"
 #   when:
 #     - item.stat.exists
 #     - item.stat.isreg
 
+# Copy dirs to backup dir
 - name: Copy dirs to backup dir
   ansible.builtin.copy:
     src: "{{ item.stat.path }}"
@@ -41,6 +43,7 @@
   - item.stat.isdir
 
 # Need to download community.general collection
+# to archive dirs to backup dir
 # - name: Archive dirs to backup dir
 #   community.general.archive:
 #     path: "{{ item.stat.path }}"

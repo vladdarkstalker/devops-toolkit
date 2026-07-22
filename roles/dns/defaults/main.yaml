@@ -1,0 +1,18 @@
+dns_packages:
+  - bind9
+  - bind9utils
+  - bind9-doc
+
+optionsfile: /etc/bind/named.conf.options
+
+localfile: /etc/bind/named.conf.local
+
+dns_backup_path: /opt/backups/dns
+
+dns_backup_files:
+  - /etc/default/named
+  - /etc/bind/named.conf.options
+  - /etc/bind/named.conf.local
+
+# dns_backup_dirs:
+#   - /opt/backups/dns

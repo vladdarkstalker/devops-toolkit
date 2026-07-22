@@ -1,0 +1,55 @@
+- name: Is backup dir exist
+  ansible.builtin.file:
+    path: "{{ dns_backup_path }}"
+    state: directory
+    mode: u=rwx,g=rx,o=rx
+
+# If we need copy files
+- name: Is backup files exist
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop: "{{ dns_backup_files }}"
+  register: dns_backup_files_stat
+
+# If we need copy dirs
+# - name: Is backup dirs exist
+#   ansible.builtin.stat:
+#     path: "{{ item }}"
+#   loop: "{{ dns_backup_dirs }}"
+#   register: dns_backup_dirs_stat
+
+# If we need copy files
+- name: Copy files to backup dir
+  ansible.builtin.copy:
+    src: "{{ item.stat.path }}"
+    dest: "{{ dns_backup_path }}/"
+    mode: preserve
+    remote_src: true
+  loop: "{{ ansible_date_time.iso8601_basic_short }}_{{ dns_backup_files_stat.results }}"
+  when:
+    - item.stat.exists
+    - item.stat.isreg
+
+# Copy dirs to backup dir
+# - name: Copy dirs to backup dir
+#   ansible.builtin.copy:
+#     src: "{{ item.stat.path }}"
+#     dest: "{{ dns_backup_path }}/{{ ansible_date_time.iso8601_basic_short }}_{{ item.stat.path | basename }}"
+#     mode: preserve
+#     remote_src: true
+#   loop: "{{ dns_backup_dirs_stat.results }}"
+#   when:
+#   - item.stat.exists
+#   - item.stat.isdir
+
+# Need to download community.general collection
+# to archive dirs to backup dir
+# - name: Archive dirs to backup dir
+#   community.general.archive:
+#     path: "{{ item.stat.path }}"
+#     dest: "{{ dns_backup_path }}/{{ ansible_date_time.iso8601_basic_short }}_{{ item.stat.path | basename }}.tar.gz"
+#     mode: u=rwx,g=r,o=r
+#   loop: "{{ dns_backup_dirs_stat.results }}"
+#   when:
+#     - item.stat.exists
+#     - item.stat.isdir

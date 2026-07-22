@@ -5,7 +5,7 @@ dhcp_group: root
 dhcp_packages:
   - isc-dhcp-server
 
-dhcp_backup_path: /opt/backups
+dhcp_backup_path: /opt/backups/dhcp
 
 # dhcp_backup_files:
 #   - /etc/dhcp/dhcpd.conf

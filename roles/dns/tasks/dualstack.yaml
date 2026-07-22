@@ -1,0 +1,29 @@
+# Is named file exist
+- name: Is named file exist
+  ansible.builtin.stat:
+    path: /etc/default/named
+  register: named_stat
+
+# Turn ON IPv4 + IPv6
+- name: Turn ON IPv4 + IPv6
+  ansible.builtin.lineinfile:
+    path: /etc/default/named
+    regexp: '^OPTIONS='
+    line: 'OPTIONS="-u bind"'
+  notify: Restart bind9
+
+# Turn ON IPv4 only
+- name: Turn ON IPv4
+  ansible.builtin.lineinfile:
+    path: /etc/default/named
+    regexp: '^OPTIONS='
+    line: 'OPTIONS="-u bind -4"'
+  notify: Restart bind9
+
+# Turn ON IPv6 only
+- name: Turn ON IPv6
+  ansible.builtin.lineinfile:
+    path: /etc/default/named
+    regexp: '^OPTIONS='
+    line: 'OPTIONS="-u bind -6"'
+  notify: Restart bind9

@@ -1,5 +1,7 @@
 # Роль DHCP
 
+Source: Hands-On Enterprise Automation on Linux, James Freeman.
+
 Устанавливает и настраивает `isc-dhcp-server` на Debian/Ubuntu.
 
 Роль выполняет следующие действия:

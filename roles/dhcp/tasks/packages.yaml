@@ -1,4 +1,4 @@
-- name: Install DHCP packages
+- name: Installing packages
   ansible.builtin.package:
     name: "{{ dhcp_packages }}"
     state: present
