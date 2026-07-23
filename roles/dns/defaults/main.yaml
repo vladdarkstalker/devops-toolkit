@@ -3,6 +3,11 @@ dns_packages:
   - bind9utils
   - bind9-doc
 
+dns_trusted_networks:
+  - 192.168.0.0/16
+
+domain: dark.side.com
+
 optionsfile: /etc/bind/named.conf.options
 
 localfile: /etc/bind/named.conf.local

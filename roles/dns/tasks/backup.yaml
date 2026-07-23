@@ -22,10 +22,10 @@
 - name: Copy files to backup dir
   ansible.builtin.copy:
     src: "{{ item.stat.path }}"
-    dest: "{{ dns_backup_path }}/"
+    dest: "{{ dns_backup_path }}/{{ ansible_date_time.iso8601_basic_short }}_{{ item.stat.path | basename }}"
     mode: preserve
     remote_src: true
-  loop: "{{ ansible_date_time.iso8601_basic_short }}_{{ dns_backup_files_stat.results }}"
+  loop: "{{ dns_backup_files_stat.results }}"
   when:
     - item.stat.exists
     - item.stat.isreg

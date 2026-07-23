@@ -6,7 +6,22 @@
     path: "{{ optionsfile }}"
   register: named_conf_options_file
 
-# Add trusted ACL
+# Add trusted ACL by one host
+# - name: Add trusted ACL
+#   ansible.builtin.blockinfile:
+#     path: "{{ optionsfile }}"
+#     marker: "# {mark} ANSIBLE MANAGED DNS ACL"
+#     insertbefore: '^\s*options\s*\{'
+#     block: |
+#       acl "trusted" {
+#           {{ hostvars['dns01']['ansible_host'] }}; # dns01
+#           {{ hostvars['dns02']['ansible_host'] }}; # dns02
+#       };
+#     validate: "named-checkconf %s"
+#   notify: Restart bind9
+#   when: named_conf_options_file.stat.exists
+
+# Add trusted ACL by recursive
 - name: Add trusted ACL
   ansible.builtin.blockinfile:
     path: "{{ optionsfile }}"
@@ -14,8 +29,9 @@
     insertbefore: '^\s*options\s*\{'
     block: |
       acl "trusted" {
-          {{ hostvars['dns01']['ansible_host'] }}; # dns01
-          {{ hostvars['dns02']['ansible_host'] }}; # dns02
+      {% for network in dns_trusted_networks %}
+          {{ network }};
+      {% endfor %}
       };
     validate: "named-checkconf %s"
   notify: Restart bind9
@@ -43,3 +59,35 @@
 
 # Configuring the Local File
 
+- name: Check if named.conf.local exists
+  ansible.builtin.stat:
+    path: "{{ localfile }}"
+  register: named_conf_local_file
+
+- name: Add forward zone
+  ansible.builtin.blockinfile:
+    path: "{{ localfile }}"
+    marker: "# {mark} ANSIBLE MANAGED DNS FORWARD ZONE"
+    block: |
+      zone "{{ domain }}" {
+          type primary;
+          file "/etc/bind/zones/db.{{ domain }}";
+          allow-transfer { {{ hostvars['dns02']['ansible_host'] }}; };
+      };
+    validate: "named-checkconf %s"
+  notify: Restart bind9
+  when: named_conf_local_file.stat.exists
+
+- name: Add reverse zone
+  ansible.builtin.blockinfile:
+    path: "{{ localfile }}"
+    marker: "# {mark} ANSIBLE MANAGED DNS REVERSE ZONE"
+    block: |
+      zone "{{ hostvars['dns01']['ansible_host'].split('.')[1] }}.{{ hostvars['dns01']['ansible_host'].split('.')[0] }}.in-addr.arpa" {
+          type primary;
+          file "/etc/bind/zones/db.{{ hostvars['dns01']['ansible_host'].split('.')[0] }}.{{ hostvars['dns01']['ansible_host'].split('.')[1] }}";
+          allow-transfer { {{ hostvars['dns02']['ansible_host'] }}; };
+      };
+    validate: "named-checkconf %s"
+  notify: Restart bind9
+  when: named_conf_local_file.stat.exists

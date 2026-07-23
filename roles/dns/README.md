@@ -6,20 +6,23 @@
 
 - установки пакетов BIND9;
 - резервного копирования конфигурации;
-- настройки ACL и блока `options`;
+- настройки ACL для доверенных подсетей;
+- настройки блока `options`;
+- объявления прямой и обратной DNS-зон;
 - проверки конфигурации через `named-checkconf`;
 - перезапуска BIND9 при изменениях.
 
-## Inventory
+## Основные переменные
 
-Для формирования ACL ожидаются узлы `dns01` и `dns02` с адресами `ansible_host`:
+```yaml
+dns_trusted_networks:
+  - 192.168.0.0/16
 
-```ini
-[dns_servers]
-dns01 ansible_host=10.128.10.11
-dns02 ansible_host=10.128.20.12
+domain: dark.side.com
 ```
 
-Настройка `named.conf.local` и файлов зон будет добавлена позже.
+Для настройки зон ожидаются узлы `dns01` и `dns02` с адресами `ansible_host` в inventory.
+
+Создание файлов прямой и обратной зон будет добавлено позже.
 
 Основа конфигурации: [DigitalOcean — BIND on Ubuntu 22.04](https://www.digitalocean.com/community/tutorials/how-to-configure-bind-as-a-private-network-dns-server-on-ubuntu-22-04).
